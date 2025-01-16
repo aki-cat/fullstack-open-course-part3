@@ -27,19 +27,17 @@ app.get("/api/persons/:id", (request, response) => {
         return response.status(404).end();
     }
     response.json(person);
-    console.log("Get person: ", person);
 });
 
 app.delete("/api/persons/:id", (request, response) => {
-    const id = request.params.id;
+    const id = parseInt(request.params.id);
     persons = persons.filter(person => person.id !== id);
+
     response.status(204).end();
-    console.log("Delete person #", id);
 });
 
 app.post("/api/persons", (request, response) => {
     const person = request.body;
-    persons = persons.concat([person]);
 
     if (typeof person.name !== "string" || typeof person.number !== "string") {
         return response.status(400).json({ error: "Malformed data." });
@@ -49,11 +47,13 @@ app.post("/api/persons", (request, response) => {
         return response.status(400).json({ error: "Name must be unique" });
     }
 
-    response.json({
+    const newPerson = {
         id: generateId(),
         name: person.name,
         number: person.number
-    });
+    };
+    persons = persons.concat([newPerson]);
+    response.json(newPerson);
 });
 
 app.listen(PORT, () => {
