@@ -1,11 +1,21 @@
 const express = require("express");
+const morgan = require("morgan");
+
+// makeshift db
+let persons = require("./persons.json");
+
+const PORT = 3001;
 
 const app = express();
 app.use(express.json());
 
-const PORT = 3001;
-
-let persons = require("./persons.json");
+morgan.token("data", (request, _) => {
+    if (request.body.length === 0 || Object.entries(request.body).length === 0) {
+        return "";
+    }
+    return JSON.stringify(request.body);
+});
+app.use(morgan(":method :url :status :res[content-length] - :response-time ms :data"));
 
 app.get("/info", (request, response) => {
     response.send(`
